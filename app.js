@@ -74,6 +74,7 @@
       });
       container.appendChild(sectionEl);
     });
+    window.SQLSyntax.attachAll();
     document.querySelectorAll('.answer-editor').forEach(area => area.addEventListener('input', e => {
       round.answers[e.target.dataset.qid] = e.target.value;
       persist();

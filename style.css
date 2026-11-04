@@ -45,3 +45,26 @@ footer { color: #718096 !important; }
 .answer-feedback .badge { font-size: .8rem; }
 .answer-editor:disabled { opacity: .78; background: #f1f5f9; }
 #scoreSummary { font-size: .92rem; }
+
+/* SQL editor: phpMyAdmin-inspired syntax colors, original UI dimensions retained */
+.sql-editor-wrap { position: relative; width: 100%; }
+.sql-editor-wrap .answer-editor, .sql-editor-highlight {
+  box-sizing: border-box; width: 100%; min-height: 130px;
+  padding: .85rem; border: 1px solid transparent; border-radius: 10px;
+  font: .9rem/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: normal; tab-size: 4; white-space: pre-wrap; overflow-wrap: break-word;
+}
+.sql-editor-wrap .answer-editor { position: relative; z-index: 1; margin: 0; background: transparent; color: transparent; -webkit-text-fill-color: transparent; caret-color: #15243a; resize: vertical; }
+.sql-editor-wrap .answer-editor::selection { background: #bcd8ff; -webkit-text-fill-color: transparent; }
+.sql-editor-wrap .answer-editor::placeholder { color: #64748b; -webkit-text-fill-color: #64748b; }
+.sql-editor-highlight { position: absolute; inset: 0; height: 100%; margin: 0; pointer-events: none; overflow: hidden; background: #fbfdff; border-color: #cbd5e1; color: #15243a; }
+.sql-editor-wrap:focus-within .sql-editor-highlight { border-color: #3b82f6; }
+.sql-editor-wrap .answer-editor:focus { outline: 3px solid #bfdbfe; border-color: #3b82f6; }
+.sql-editor-wrap .answer-editor:disabled { background: transparent; opacity: 1; }
+.sql-editor-wrap:has(.answer-editor:disabled) .sql-editor-highlight { background: #f1f5f9; }
+.sql-keyword { color: #0047ab; font-weight: 700; }
+.sql-string { color: #c2410c; }
+.sql-number { color: #0d9488; }
+.sql-comment { color: #6b7280; font-style: italic; }
+.sql-operator { color: #9d174d; }
+.sql-identifier { color: #7c3aed; }
