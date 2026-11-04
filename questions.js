@@ -2762,3 +2762,566 @@ stock_movements(
     }
 
 })();
+
+
+/* SQL-only practice: replace explanatory questions with executable SQL tasks. */
+(function () {
+  'use strict';
+  const replacements = {
+  "4-5": {
+    "prompt": "สร้างตาราง registrations สำหรับความสัมพันธ์หลายต่อหลายระหว่าง participants และ courses โดยใช้คีย์ประกอบและ Foreign Key",
+    "answer": "CREATE TABLE registrations (participant_id BIGINT NOT NULL, course_id BIGINT NOT NULL, PRIMARY KEY (participant_id, course_id), FOREIGN KEY (participant_id) REFERENCES participants(id), FOREIGN KEY (course_id) REFERENCES courses(id));",
+    "expectedSql": "CREATE TABLE registrations (participant_id BIGINT NOT NULL, course_id BIGINT NOT NULL, PRIMARY KEY (participant_id, course_id), FOREIGN KEY (participant_id) REFERENCES participants(id), FOREIGN KEY (course_id) REFERENCES courses(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "9-5": {
+    "prompt": "ค้นหาพนักงานในตาราง employees ที่คอลัมน์ email เป็น NULL โดยใช้เงื่อนไขที่ถูกต้อง",
+    "answer": "SELECT * FROM employees WHERE email IS NULL;",
+    "expectedSql": "SELECT * FROM employees WHERE email IS NULL;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "17-3": {
+    "prompt": "เขียน SQL เพิ่มพนักงานจากตาราง old_employees ไปยัง employees โดยเลือกเฉพาะแผนก IT ด้วย INSERT ... SELECT",
+    "answer": "INSERT INTO employees (first_name, department, salary) SELECT first_name, department, salary FROM old_employees WHERE department = 'IT';",
+    "expectedSql": "INSERT INTO employees (first_name, department, salary) SELECT first_name, department, salary FROM old_employees WHERE department = 'IT';",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "17-5": {
+    "prompt": "เขียนคำสั่งส่งออก employee_id และ first_name จาก employees เป็นไฟล์ CSV ที่ /tmp/employees_export.csv ด้วย INTO OUTFILE",
+    "answer": "SELECT employee_id, first_name FROM employees INTO OUTFILE '/tmp/employees_export.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\\n';",
+    "expectedSql": "SELECT employee_id, first_name FROM employees INTO OUTFILE '/tmp/employees_export.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\\n';",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "19-5": {
+    "prompt": "เขียน SQL ลบข้อมูลทุกแถวใน employees แต่ยังคงโครงสร้างตารางไว้ โดยใช้ TRUNCATE",
+    "answer": "TRUNCATE TABLE employees;",
+    "expectedSql": "TRUNCATE TABLE employees;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "20-1": {
+    "prompt": "เขียน SQL ลบเฉพาะพนักงานแผนก HR ออกจาก employees โดยไม่ลบโครงสร้างตาราง",
+    "answer": "DELETE FROM employees WHERE department = 'HR';",
+    "expectedSql": "DELETE FROM employees WHERE department = 'HR';",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "20-5": {
+    "prompt": "เขียน SQL ลบข้อมูลทั้งหมดใน employees ด้วย TRUNCATE TABLE",
+    "answer": "TRUNCATE TABLE employees;",
+    "expectedSql": "TRUNCATE TABLE employees;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "21-1": {
+    "prompt": "เขียน SQL เพิ่มผู้ใช้ id=10 ชื่อ 'Somchai' ลงใน users โดยใช้ INSERT IGNORE เพื่อข้ามรายการที่มีคีย์ซ้ำ",
+    "answer": "INSERT IGNORE INTO users (id, name) VALUES (10, 'Somchai');",
+    "expectedSql": "INSERT IGNORE INTO users (id, name) VALUES (10, 'Somchai');",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "21-3": {
+    "prompt": "เขียน SQL ใช้ REPLACE INTO เพื่อเพิ่มหรือแทนที่แถวใน users ที่มี id=10 และ name='Somchai'",
+    "answer": "REPLACE INTO users (id, name) VALUES (10, 'Somchai');",
+    "expectedSql": "REPLACE INTO users (id, name) VALUES (10, 'Somchai');",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "21-5": {
+    "prompt": "เขียน SQL เพิ่มสินค้า id=1 ชื่อ 'Pen' stock=10 และหากคีย์ซ้ำให้ปรับ stock เป็น 10 ด้วย ON DUPLICATE KEY UPDATE",
+    "answer": "INSERT INTO products (id, product_name, stock) VALUES (1, 'Pen', 10) ON DUPLICATE KEY UPDATE stock = 10;",
+    "expectedSql": "INSERT INTO products (id, product_name, stock) VALUES (1, 'Pen', 10) ON DUPLICATE KEY UPDATE stock = 10;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "22-1": {
+    "prompt": "เขียน SQL เริ่ม Transaction จากนั้นเพิ่มเงินเดือนพนักงาน id=1 อีก 500 และ COMMIT",
+    "answer": "START TRANSACTION; UPDATE employees SET salary = salary + 500 WHERE id = 1; COMMIT;",
+    "expectedSql": "START TRANSACTION; UPDATE employees SET salary = salary + 500 WHERE id = 1; COMMIT;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "22-2": {
+    "prompt": "เขียน SQL เริ่ม Transaction ปรับเงินเดือนพนักงาน id=1 เป็น 30000 แล้วบันทึกการเปลี่ยนแปลงถาวร",
+    "answer": "START TRANSACTION; UPDATE employees SET salary = 30000 WHERE id = 1; COMMIT;",
+    "expectedSql": "START TRANSACTION; UPDATE employees SET salary = 30000 WHERE id = 1; COMMIT;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "22-3": {
+    "prompt": "เขียน SQL เริ่ม Transaction ลบพนักงาน id=1 แล้วใช้คำสั่งยกเลิกการเปลี่ยนแปลง",
+    "answer": "START TRANSACTION; DELETE FROM employees WHERE id = 1; ROLLBACK;",
+    "expectedSql": "START TRANSACTION; DELETE FROM employees WHERE id = 1; ROLLBACK;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "23-1": {
+    "prompt": "เขียน SQL เริ่ม Transaction ตั้ง SAVEPOINT ชื่อ sp1 แล้ว COMMIT",
+    "answer": "START TRANSACTION; SAVEPOINT sp1; COMMIT;",
+    "expectedSql": "START TRANSACTION; SAVEPOINT sp1; COMMIT;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "23-3": {
+    "prompt": "เขียน SQL เริ่ม Transaction ตั้ง SAVEPOINT sp1 ปรับเงินเดือนพนักงาน id=1 แล้ว ROLLBACK TO SAVEPOINT sp1",
+    "answer": "START TRANSACTION; SAVEPOINT sp1; UPDATE employees SET salary = 40000 WHERE id = 1; ROLLBACK TO SAVEPOINT sp1;",
+    "expectedSql": "START TRANSACTION; SAVEPOINT sp1; UPDATE employees SET salary = 40000 WHERE id = 1; ROLLBACK TO SAVEPOINT sp1;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "23-4": {
+    "prompt": "เขียน SQL เริ่ม Transaction ตั้ง SAVEPOINT sp1 จากนั้นลบ SAVEPOINT ดังกล่าวและ COMMIT",
+    "answer": "START TRANSACTION; SAVEPOINT sp1; RELEASE SAVEPOINT sp1; COMMIT;",
+    "expectedSql": "START TRANSACTION; SAVEPOINT sp1; RELEASE SAVEPOINT sp1; COMMIT;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "24-1": {
+    "prompt": "เขียน SQL เริ่ม Transaction โอนยอด 100 จากบัญชี id=1 ไปบัญชี id=2 ใน accounts(balance) แล้ว COMMIT",
+    "answer": "START TRANSACTION; UPDATE accounts SET balance = balance - 100 WHERE id = 1; UPDATE accounts SET balance = balance + 100 WHERE id = 2; COMMIT;",
+    "expectedSql": "START TRANSACTION; UPDATE accounts SET balance = balance - 100 WHERE id = 1; UPDATE accounts SET balance = balance + 100 WHERE id = 2; COMMIT;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "24-2": {
+    "prompt": "เขียน SQL กำหนด Isolation Level ของ Transaction ถัดไปเป็น READ UNCOMMITTED แล้วเริ่ม Transaction",
+    "answer": "SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED; START TRANSACTION;",
+    "expectedSql": "SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED; START TRANSACTION;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "24-3": {
+    "prompt": "เขียน SQL กำหนด Isolation Level ของ Transaction ถัดไปเป็น READ COMMITTED แล้วเริ่ม Transaction",
+    "answer": "SET TRANSACTION ISOLATION LEVEL READ COMMITTED; START TRANSACTION;",
+    "expectedSql": "SET TRANSACTION ISOLATION LEVEL READ COMMITTED; START TRANSACTION;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "24-4": {
+    "prompt": "เขียน SQL กำหนด Isolation Level ของ Transaction ถัดไปเป็น REPEATABLE READ แล้วเริ่ม Transaction",
+    "answer": "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ; START TRANSACTION;",
+    "expectedSql": "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ; START TRANSACTION;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "24-5": {
+    "prompt": "เขียน SQL กำหนด Isolation Level ของ Transaction ถัดไปเป็น SERIALIZABLE แล้วเริ่ม Transaction",
+    "answer": "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; START TRANSACTION;",
+    "expectedSql": "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; START TRANSACTION;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "25-1": {
+    "prompt": "เขียน SQL สร้างตาราง products โดยมี id เป็น PRIMARY KEY และ price เป็น DECIMAL(10,2) NOT NULL พร้อม CHECK price >= 0",
+    "answer": "CREATE TABLE products (id INT PRIMARY KEY, price DECIMAL(10,2) NOT NULL, CHECK (price >= 0));",
+    "expectedSql": "CREATE TABLE products (id INT PRIMARY KEY, price DECIMAL(10,2) NOT NULL, CHECK (price >= 0));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "25-2": {
+    "prompt": "เขียน SQL สร้างตาราง departments(id PRIMARY KEY) และ employees(id PRIMARY KEY, department_id FOREIGN KEY)",
+    "answer": "CREATE TABLE departments (id INT PRIMARY KEY); CREATE TABLE employees (id INT PRIMARY KEY, department_id INT, FOREIGN KEY (department_id) REFERENCES departments(id));",
+    "expectedSql": "CREATE TABLE departments (id INT PRIMARY KEY); CREATE TABLE employees (id INT PRIMARY KEY, department_id INT, FOREIGN KEY (department_id) REFERENCES departments(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "25-4": {
+    "prompt": "เขียน SQL สร้างตาราง orders ที่มี customer_id อ้างอิง customers(id) และลบรายการ orders ตามเมื่อแถวลูกค้าถูกลบ",
+    "answer": "CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE);",
+    "expectedSql": "CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "25-5": {
+    "prompt": "เขียน SQL เปิด Safe Update Mode สำหรับ Session ปัจจุบัน",
+    "answer": "SET SQL_SAFE_UPDATES = 1;",
+    "expectedSql": "SET SQL_SAFE_UPDATES = 1;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "26-5": {
+    "prompt": "เขียน SQL สร้างตาราง users โดย id เป็น PRIMARY KEY, email ห้าม NULL และไม่ซ้ำ",
+    "answer": "CREATE TABLE users (id INT PRIMARY KEY, email VARCHAR(255) NOT NULL UNIQUE);",
+    "expectedSql": "CREATE TABLE users (id INT PRIMARY KEY, email VARCHAR(255) NOT NULL UNIQUE);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "27-4": {
+    "prompt": "เขียน SQL สร้างตาราง products ที่มี id เป็น PRIMARY KEY และ name VARCHAR(100) NOT NULL",
+    "answer": "CREATE TABLE products (id INT PRIMARY KEY, name VARCHAR(100) NOT NULL);",
+    "expectedSql": "CREATE TABLE products (id INT PRIMARY KEY, name VARCHAR(100) NOT NULL);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "28-4": {
+    "prompt": "เขียน SQL สร้างตาราง orders ที่มี customer_id เป็น Foreign Key อ้างอิง customers(id) พร้อม ON DELETE RESTRICT",
+    "answer": "CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT);",
+    "expectedSql": "CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "28-5": {
+    "prompt": "เขียน SQL สร้างตาราง orders ที่มี customer_id อ้างอิง customers(id) และกำหนด ON DELETE SET NULL",
+    "answer": "CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT NULL, FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL);",
+    "expectedSql": "CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT NULL, FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "30-3": {
+    "prompt": "เขียน SQL สร้างตาราง products ที่มี code CHAR(5) และ name VARCHAR(100)",
+    "answer": "CREATE TABLE products (id INT PRIMARY KEY, code CHAR(5), name VARCHAR(100));",
+    "expectedSql": "CREATE TABLE products (id INT PRIMARY KEY, code CHAR(5), name VARCHAR(100));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "30-5": {
+    "prompt": "เขียน SQL สร้างตาราง users ที่มี is_active BOOLEAN NOT NULL DEFAULT TRUE",
+    "answer": "CREATE TABLE users (id INT PRIMARY KEY, is_active BOOLEAN NOT NULL DEFAULT TRUE);",
+    "expectedSql": "CREATE TABLE users (id INT PRIMARY KEY, is_active BOOLEAN NOT NULL DEFAULT TRUE);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "31-1": {
+    "prompt": "เขียน SQL สร้างตาราง customers(id,name) และ orders(id,customer_id) โดยเชื่อม Foreign Key แทนการเก็บชื่อลูกค้าซ้ำใน orders",
+    "answer": "CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(100)); CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, FOREIGN KEY (customer_id) REFERENCES customers(id));",
+    "expectedSql": "CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(100)); CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, FOREIGN KEY (customer_id) REFERENCES customers(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "31-2": {
+    "prompt": "เขียน SQL สร้างตาราง order_items ที่เก็บสินค้าแต่ละรายการเป็นหนึ่งแถว โดยมี order_id, product_id และ quantity พร้อมคีย์ประกอบ",
+    "answer": "CREATE TABLE order_items (order_id INT, product_id INT, quantity INT NOT NULL, PRIMARY KEY (order_id, product_id));",
+    "expectedSql": "CREATE TABLE order_items (order_id INT, product_id INT, quantity INT NOT NULL, PRIMARY KEY (order_id, product_id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "31-3": {
+    "prompt": "เขียน SQL สร้างตาราง enrollments สำหรับ student_id และ course_id เป็น Composite Primary Key โดยเก็บ course_name ไว้ในตาราง courses แยกต่างหาก",
+    "answer": "CREATE TABLE courses (id INT PRIMARY KEY, course_name VARCHAR(100)); CREATE TABLE enrollments (student_id INT, course_id INT, PRIMARY KEY (student_id, course_id), FOREIGN KEY (course_id) REFERENCES courses(id));",
+    "expectedSql": "CREATE TABLE courses (id INT PRIMARY KEY, course_name VARCHAR(100)); CREATE TABLE enrollments (student_id INT, course_id INT, PRIMARY KEY (student_id, course_id), FOREIGN KEY (course_id) REFERENCES courses(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "31-4": {
+    "prompt": "เขียน SQL สร้างตาราง departments(id,name) และ employees(id,department_id) เพื่อไม่เก็บ department_name ซ้ำใน employees",
+    "answer": "CREATE TABLE departments (id INT PRIMARY KEY, name VARCHAR(100)); CREATE TABLE employees (id INT PRIMARY KEY, department_id INT, FOREIGN KEY (department_id) REFERENCES departments(id));",
+    "expectedSql": "CREATE TABLE departments (id INT PRIMARY KEY, name VARCHAR(100)); CREATE TABLE employees (id INT PRIMARY KEY, department_id INT, FOREIGN KEY (department_id) REFERENCES departments(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "31-5": {
+    "prompt": "เขียน SQL สร้างตาราง customers(id,address) และ orders(id,customer_id) พร้อม Foreign Key เพื่อแยกที่อยู่ลูกค้าออกจากรายการสั่งซื้อ",
+    "answer": "CREATE TABLE customers (id INT PRIMARY KEY, address VARCHAR(255)); CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, FOREIGN KEY (customer_id) REFERENCES customers(id));",
+    "expectedSql": "CREATE TABLE customers (id INT PRIMARY KEY, address VARCHAR(255)); CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT, FOREIGN KEY (customer_id) REFERENCES customers(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "32-1": {
+    "prompt": "เขียน SQL สร้าง Entity employees โดยมี id PRIMARY KEY และ name VARCHAR(100)",
+    "answer": "CREATE TABLE employees (id INT PRIMARY KEY, name VARCHAR(100));",
+    "expectedSql": "CREATE TABLE employees (id INT PRIMARY KEY, name VARCHAR(100));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "32-2": {
+    "prompt": "เขียน SQL สร้างตาราง employees ที่มี Attribute id, employee_name และ salary โดยกำหนดชนิดข้อมูลเหมาะสม",
+    "answer": "CREATE TABLE employees (id INT PRIMARY KEY, employee_name VARCHAR(100), salary DECIMAL(10,2));",
+    "expectedSql": "CREATE TABLE employees (id INT PRIMARY KEY, employee_name VARCHAR(100), salary DECIMAL(10,2));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "32-3": {
+    "prompt": "เขียน SQL สร้างความสัมพันธ์ One-to-Many ระหว่าง departments กับ employees โดยใช้ Foreign Key",
+    "answer": "CREATE TABLE departments (id INT PRIMARY KEY); CREATE TABLE employees (id INT PRIMARY KEY, department_id INT, FOREIGN KEY (department_id) REFERENCES departments(id));",
+    "expectedSql": "CREATE TABLE departments (id INT PRIMARY KEY); CREATE TABLE employees (id INT PRIMARY KEY, department_id INT, FOREIGN KEY (department_id) REFERENCES departments(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "32-4": {
+    "prompt": "เขียน SQL สร้างตาราง enrollments เพื่อเชื่อม students และ courses แบบ Many-to-Many พร้อม Composite Primary Key และ Foreign Key ทั้งสองฝั่ง",
+    "answer": "CREATE TABLE enrollments (student_id INT, course_id INT, PRIMARY KEY (student_id, course_id), FOREIGN KEY (student_id) REFERENCES students(id), FOREIGN KEY (course_id) REFERENCES courses(id));",
+    "expectedSql": "CREATE TABLE enrollments (student_id INT, course_id INT, PRIMARY KEY (student_id, course_id), FOREIGN KEY (student_id) REFERENCES students(id), FOREIGN KEY (course_id) REFERENCES courses(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "32-5": {
+    "prompt": "เขียน SQL สร้างตาราง employees ที่มี department_id เป็น Foreign Key อ้างอิง departments(id)",
+    "answer": "CREATE TABLE employees (id INT PRIMARY KEY, department_id INT, FOREIGN KEY (department_id) REFERENCES departments(id));",
+    "expectedSql": "CREATE TABLE employees (id INT PRIMARY KEY, department_id INT, FOREIGN KEY (department_id) REFERENCES departments(id));",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "33-5": {
+    "prompt": "เขียน SQL สร้าง View ชื่อ department_totals ที่แสดง department_id และจำนวนพนักงานจาก employees ด้วย GROUP BY",
+    "answer": "CREATE VIEW department_totals AS SELECT department_id, COUNT(*) AS total FROM employees GROUP BY department_id;",
+    "expectedSql": "CREATE VIEW department_totals AS SELECT department_id, COUNT(*) AS total FROM employees GROUP BY department_id;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "34-5": {
+    "prompt": "เขียน SQL สร้าง Index ชื่อ idx_employees_department บนคอลัมน์ department_id ของ employees",
+    "answer": "CREATE INDEX idx_employees_department ON employees (department_id);",
+    "expectedSql": "CREATE INDEX idx_employees_department ON employees (department_id);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "35-1": {
+    "prompt": "เขียน SQL สร้าง Stored Procedure ชื่อ GetAllEmployees ที่ SELECT ข้อมูลทุกแถวจาก employees",
+    "answer": "CREATE PROCEDURE GetAllEmployees() SELECT * FROM employees;",
+    "expectedSql": "CREATE PROCEDURE GetAllEmployees() SELECT * FROM employees;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "36-1": {
+    "prompt": "เขียน SQL สร้าง Stored Function ชื่อ AddTax ที่รับ amount DECIMAL(10,2) และคืนค่า amount * 1.07",
+    "answer": "CREATE FUNCTION AddTax(amount DECIMAL(10,2)) RETURNS DECIMAL(10,2) DETERMINISTIC RETURN amount * 1.07;",
+    "expectedSql": "CREATE FUNCTION AddTax(amount DECIMAL(10,2)) RETURNS DECIMAL(10,2) DETERMINISTIC RETURN amount * 1.07;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "36-5": {
+    "prompt": "เขียน SQL สร้าง Stored Function ชื่อ DoubleValue รับ n INT และ RETURN n * 2",
+    "answer": "CREATE FUNCTION DoubleValue(n INT) RETURNS INT DETERMINISTIC RETURN n * 2;",
+    "expectedSql": "CREATE FUNCTION DoubleValue(n INT) RETURNS INT DETERMINISTIC RETURN n * 2;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "37-1": {
+    "prompt": "เขียน SQL สร้าง Trigger ชื่อ before_insert_products ก่อน INSERT บน products เพื่อกำหนด NEW.created_at = NOW()",
+    "answer": "CREATE TRIGGER before_insert_products BEFORE INSERT ON products FOR EACH ROW SET NEW.created_at = NOW();",
+    "expectedSql": "CREATE TRIGGER before_insert_products BEFORE INSERT ON products FOR EACH ROW SET NEW.created_at = NOW();",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "37-3": {
+    "prompt": "เขียน SQL สร้าง Trigger ชื่อ before_update_products ก่อน UPDATE บน products เพื่อกำหนด NEW.updated_at = NOW()",
+    "answer": "CREATE TRIGGER before_update_products BEFORE UPDATE ON products FOR EACH ROW SET NEW.updated_at = NOW();",
+    "expectedSql": "CREATE TRIGGER before_update_products BEFORE UPDATE ON products FOR EACH ROW SET NEW.updated_at = NOW();",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "37-5": {
+    "prompt": "เขียน SQL สร้าง Trigger ชื่อ after_update_products หลัง UPDATE บน products เพื่อบันทึก product_id ลง product_logs(product_id) ด้วย NEW.id",
+    "answer": "CREATE TRIGGER after_update_products AFTER UPDATE ON products FOR EACH ROW INSERT INTO product_logs (product_id) VALUES (NEW.id);",
+    "expectedSql": "CREATE TRIGGER after_update_products AFTER UPDATE ON products FOR EACH ROW INSERT INTO product_logs (product_id) VALUES (NEW.id);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "38-1": {
+    "prompt": "เขียน SQL ใช้ CTE ชื่อ high_salary เลือกพนักงานจาก employees ที่ salary > 30000 แล้ว SELECT ทุกแถวจาก CTE",
+    "answer": "WITH high_salary AS (SELECT * FROM employees WHERE salary > 30000) SELECT * FROM high_salary;",
+    "expectedSql": "WITH high_salary AS (SELECT * FROM employees WHERE salary > 30000) SELECT * FROM high_salary;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "38-4": {
+    "prompt": "เขียน SQL ด้วย Recursive CTE สร้างลำดับตัวเลข 1 ถึง 5 และ SELECT ผลลัพธ์",
+    "answer": "WITH RECURSIVE nums AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM nums WHERE n < 5) SELECT n FROM nums;",
+    "expectedSql": "WITH RECURSIVE nums AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM nums WHERE n < 5) SELECT n FROM nums;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "41-3": {
+    "prompt": "เขียน SQL รวมรายชื่อจาก customers และ suppliers โดยตัดชื่อที่ซ้ำกันออกด้วย UNION",
+    "answer": "SELECT name FROM customers UNION SELECT name FROM suppliers;",
+    "expectedSql": "SELECT name FROM customers UNION SELECT name FROM suppliers;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "42-5": {
+    "prompt": "เขียน SQL ค้นหาลูกค้าใน customers ที่มีคำสั่งซื้ออย่างน้อยหนึ่งรายการใน orders โดยใช้ EXISTS",
+    "answer": "SELECT * FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);",
+    "expectedSql": "SELECT * FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "45-5": {
+    "prompt": "เขียน SQL ให้สิทธิ์ SELECT เฉพาะตาราง shop_db.products แก่บัญชี 'report'@'localhost'",
+    "answer": "GRANT SELECT ON shop_db.products TO 'report'@'localhost';",
+    "expectedSql": "GRANT SELECT ON shop_db.products TO 'report'@'localhost';",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "46-1": {
+    "prompt": "เขียน SQL แบบ Prepared Statement ของ MySQL เพื่อค้นหา users จาก id โดยใช้ ? เป็น Parameter แทนการต่อ String",
+    "answer": "PREPARE stmt FROM 'SELECT * FROM users WHERE id = ?'; SET @user_id = 1; EXECUTE stmt USING @user_id; DEALLOCATE PREPARE stmt;",
+    "expectedSql": "PREPARE stmt FROM 'SELECT * FROM users WHERE id = ?'; SET @user_id = 1; EXECUTE stmt USING @user_id; DEALLOCATE PREPARE stmt;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "46-3": {
+    "prompt": "เขียน SQL Prepared Statement สำหรับค้นหา users ด้วย email โดยใช้ Parameter ? และ EXECUTE USING @email",
+    "answer": "PREPARE stmt FROM 'SELECT * FROM users WHERE email = ?'; SET @email = 'a@example.com'; EXECUTE stmt USING @email; DEALLOCATE PREPARE stmt;",
+    "expectedSql": "PREPARE stmt FROM 'SELECT * FROM users WHERE email = ?'; SET @email = 'a@example.com'; EXECUTE stmt USING @email; DEALLOCATE PREPARE stmt;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "46-4": {
+    "prompt": "เขียน SQL สร้างบัญชี 'webapp'@'localhost' พร้อมกำหนดรหัสผ่านตัวอย่าง แล้วให้สิทธิ์ SELECT, INSERT, UPDATE เฉพาะ shop_db.*",
+    "answer": "CREATE USER 'webapp'@'localhost' IDENTIFIED BY 'ChangeMe_StrongPassword_123!'; GRANT SELECT, INSERT, UPDATE ON shop_db.* TO 'webapp'@'localhost';",
+    "expectedSql": "CREATE USER 'webapp'@'localhost' IDENTIFIED BY 'ChangeMe_StrongPassword_123!'; GRANT SELECT, INSERT, UPDATE ON shop_db.* TO 'webapp'@'localhost';",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "46-5": {
+    "prompt": "เขียน SQL ตรวจสอบว่าการเชื่อมต่อ MySQL Session ปัจจุบันใช้ TLS โดยดูค่า Ssl_cipher",
+    "answer": "SHOW STATUS LIKE 'Ssl_cipher';",
+    "expectedSql": "SHOW STATUS LIKE 'Ssl_cipher';",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "47-3": {
+    "prompt": "เขียน SQL ล็อกตารางทั้งหมดชั่วคราวด้วย FLUSH TABLES WITH READ LOCK เพื่อเตรียมการสำรองข้อมูล (ต้องมีสิทธิ์เหมาะสม)",
+    "answer": "FLUSH TABLES WITH READ LOCK;",
+    "expectedSql": "FLUSH TABLES WITH READ LOCK;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "47-4": {
+    "prompt": "เขียน SQL ตรวจสอบตำแหน่ง Binary Log ปัจจุบันของ MySQL 8.0",
+    "answer": "SHOW MASTER STATUS;",
+    "expectedSql": "SHOW MASTER STATUS;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "47-5": {
+    "prompt": "เขียน SQL ปลดล็อกตารางที่ล็อกไว้ใน Session ปัจจุบันหลังขั้นตอนสำรองข้อมูล",
+    "answer": "UNLOCK TABLES;",
+    "expectedSql": "UNLOCK TABLES;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "48-2": {
+    "prompt": "เขียน SQL ใช้ EXPLAIN เพื่อตรวจสอบแผนการทำงานของ SELECT * FROM employees WHERE salary > 30000",
+    "answer": "EXPLAIN SELECT * FROM employees WHERE salary > 30000;",
+    "expectedSql": "EXPLAIN SELECT * FROM employees WHERE salary > 30000;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "48-3": {
+    "prompt": "เขียน SQL แสดงเฉพาะ name และ salary ของพนักงานจาก employees แทนการใช้ SELECT *",
+    "answer": "SELECT name, salary FROM employees;",
+    "expectedSql": "SELECT name, salary FROM employees;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "48-4": {
+    "prompt": "เขียน SQL ค้นหา orders ในปี 2025 ด้วยเงื่อนไขช่วงวันที่ที่รองรับการใช้ Index บน order_date",
+    "answer": "SELECT * FROM orders WHERE order_date >= '2025-01-01' AND order_date < '2026-01-01';",
+    "expectedSql": "SELECT * FROM orders WHERE order_date >= '2025-01-01' AND order_date < '2026-01-01';",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "52-1": {
+    "prompt": "เขียน SQL เริ่ม Transaction และล็อกแถว accounts ที่ id=1 ด้วย SELECT FOR UPDATE",
+    "answer": "START TRANSACTION; SELECT * FROM accounts WHERE id = 1 FOR UPDATE;",
+    "expectedSql": "START TRANSACTION; SELECT * FROM accounts WHERE id = 1 FOR UPDATE;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "52-3": {
+    "prompt": "เขียน SQL เริ่ม Transaction และอ่านแถว accounts id=1 โดยใช้ SELECT FOR SHARE",
+    "answer": "START TRANSACTION; SELECT * FROM accounts WHERE id = 1 FOR SHARE;",
+    "expectedSql": "START TRANSACTION; SELECT * FROM accounts WHERE id = 1 FOR SHARE;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "52-4": {
+    "prompt": "เขียน SQL ยกเลิก Transaction ที่ล้มเหลวด้วย ROLLBACK (การ Retry ต้องจัดการในแอปพลิเคชัน)",
+    "answer": "ROLLBACK;",
+    "expectedSql": "ROLLBACK;",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  },
+  "52-5": {
+    "prompt": "เขียน SQL สร้าง Index บน accounts(account_id) เพื่อช่วยลดการสแกนแถวเมื่อค้นหาบัญชีด้วย account_id",
+    "answer": "CREATE INDEX idx_accounts_account_id ON accounts (account_id);",
+    "expectedSql": "CREATE INDEX idx_accounts_account_id ON accounts (account_id);",
+    "explanation": "ฝึกเขียนคำสั่ง SQL ตามเงื่อนไขที่กำหนด ตรวจสอบชื่อคอลัมน์ ตาราง และโครงสร้างคำสั่งกับแนวเฉลย",
+    "type": "manual",
+    "keywords": []
+  }
+};
+  let changed = 0;
+  for (const group of window.QUESTION_BANK) {
+    for (const question of group.questions) {
+      const replacement = replacements[question.id];
+      if (replacement) { Object.assign(question, replacement); changed++; }
+    }
+  }
+  if (changed !== 68) throw new Error('SQL-only question migration incomplete: ' + changed);
+})();
+
+/* Final SQL-only cleanup for non-SQL short answers and CLI examples. */
+(function(){const replacements={"17-4": ["เขียนคำสั่ง SQL นำเข้าข้อมูลจากไฟล์ /tmp/employees.csv ไปยังตาราง employees โดยคั่นข้อมูลด้วยเครื่องหมายจุลภาค", "LOAD DATA INFILE '/tmp/employees.csv' INTO TABLE employees FIELDS TERMINATED BY ',' IGNORE 1 LINES;"], "30-1": ["เขียน SQL สร้างตาราง inventory โดยมี id เป็น PRIMARY KEY และ quantity เป็น INT NOT NULL", "CREATE TABLE inventory (id INT PRIMARY KEY, quantity INT NOT NULL);"], "30-2": ["เขียน SQL สร้างตาราง products ที่มี id เป็น PRIMARY KEY และ price เป็น DECIMAL(10,2)", "CREATE TABLE products (id INT PRIMARY KEY, price DECIMAL(10,2));"], "30-4": ["เขียน SQL สร้างตาราง events ที่มี id เป็น PRIMARY KEY และ starts_at เป็น DATETIME", "CREATE TABLE events (id INT PRIMARY KEY, starts_at DATETIME);"], "46-2": ["เขียน SQL Prepared Statement ของ MySQL เพื่อค้นหา users ด้วย id โดยใช้ Parameter ?", "PREPARE stmt FROM 'SELECT * FROM users WHERE id = ?'; SET @id = 1; EXECUTE stmt USING @id; DEALLOCATE PREPARE stmt;"], "47-1": ["เขียน SQL แสดงรายชื่อฐานข้อมูลทั้งหมดบน MySQL Server ด้วย SHOW", "SHOW DATABASES;"], "47-2": ["เขียน SQL แสดงรายชื่อตารางทั้งหมดในฐานข้อมูล exam_db", "SHOW TABLES FROM exam_db;"]}; let count=0;for(const g of window.QUESTION_BANK){for(const q of g.questions){if(replacements[q.id]){const [prompt,answer]=replacements[q.id];Object.assign(q,{prompt,answer,expectedSql:answer,explanation:"ใช้คำสั่ง SQL ให้ตรงกับเงื่อนไขโจทย์",keywords:[]});count++;}}}if(count!==7)throw Error("SQL-only cleanup incomplete");})();

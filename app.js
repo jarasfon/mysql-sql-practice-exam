@@ -39,27 +39,19 @@
   const allQuestions = () => sections().flatMap(g => g.questions);
   const persist = () => write(KEY, round);
   const difficultyClass = level => ({Easy:'easy', Medium:'medium', Hard:'hard', Advanced:'advanced'})[level] || 'medium';
-  const isSql = q => /^(?:SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|TRUNCATE|RENAME|REPLACE|START|COMMIT|ROLLBACK|SAVEPOINT|RELEASE|SET|SHOW|EXPLAIN|WITH|CALL|GRANT|REVOKE|mysqldump|mysql\s+-)/i.test(String(q.answer || '').trim());
+  const isSql = q => /^(?:SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|TRUNCATE|RENAME|REPLACE|START|COMMIT|ROLLBACK|SAVEPOINT|RELEASE|SET|SHOW|EXPLAIN|WITH|CALL|GRANT|REVOKE|PREPARE|EXECUTE|DEALLOCATE|FLUSH|UNLOCK)/i.test(String(q.answer || '').trim());
   function check(q, value) {
-    const text = value.trim();
-    if (!text) return { status: 'unanswered', score: 0, feedback: 'ยังไม่ได้กรอกคำตอบ' };
-    if (isSql(q) && window.SQLGrader) {
-      const result = window.SQLGrader.gradeAnswer(q, text);
-      if (result.status === 'correct') return { status: 'correct', score: 4, feedback: 'คำตอบตรงกับเฉลยอ้างอิง (ยังไม่ได้รัน SQL จริง)' };
-      if (result.status === 'syntax-warning') return { status: 'review', score: null, feedback: `พบข้อควรตรวจสอบ: ${(result.feedback || []).join(' ')}` };
-    }
-    if (!isSql(q) && text.replace(/\s+/g, ' ') === String(q.answer || '').trim().replace(/\s+/g, ' ')) {
-      return { status: 'correct', score: 4, feedback: 'ข้อความตรงกับเฉลยอ้างอิง' };
-    }
-    return { status: 'review', score: null, feedback: 'คำตอบต่างจากเฉลยอ้างอิง อาจถูกต้องได้ กรุณาเปรียบเทียบเฉลยแล้วประเมินด้วยตนเอง' };
+    const result = window.SQLGrader.gradeAnswer(q, value);
+    return {status: result.status, score: result.score, provisional: result.provisional,
+      feedback: (result.feedback || []).join(' ')};
   }
   function resultHtml(q) {
     const r = round.results[q.id];
     if (!r) return '';
-    const labels = {correct:'ตรงเฉลย', review:'รอตรวจทาน', self_correct:'ประเมินตนเอง: ถูก', self_incorrect:'ประเมินตนเอง: ผิด', unanswered:'ยังไม่ตอบ'};
-    const color = ['correct','self_correct'].includes(r.status) ? 'success' : r.status === 'review' ? 'warning' : 'secondary';
-    const selfButtons = r.status === 'review' && !round.submitted ? `<div class="d-flex flex-wrap gap-2 mt-3"><button type="button" class="btn btn-sm btn-outline-success self-grade" data-qid="${escapeHtml(q.id)}" data-score="4">ฉันตรวจแล้ว: ถูก (4 คะแนน)</button><button type="button" class="btn btn-sm btn-outline-danger self-grade" data-qid="${escapeHtml(q.id)}" data-score="0">ฉันตรวจแล้ว: ผิด (0 คะแนน)</button></div>` : '';
-    return `<div class="answer-feedback mt-3"><span class="badge text-bg-${color}">${labels[r.status] || 'ตรวจแล้ว'}</span><p class="small mt-2 mb-1">${escapeHtml(r.feedback)}</p><div class="solution"><div class="fw-bold text-success mb-2">แนวคำตอบ</div><pre>${escapeHtml(q.answer)}</pre><p><strong>คำอธิบาย:</strong> ${escapeHtml(q.explanation)}</p></div>${selfButtons}</div>`;
+    const labels = {correct:'ตรงเฉลย · 4/4',partial:'คะแนนประเมินเบื้องต้น',review:'รอตรวจทาน',unanswered:'ยังไม่ตอบ', 'syntax-warning':'ตรวจพบปัญหา'};
+    const color = r.status === 'correct' ? 'success' : r.status === 'partial' ? 'warning' : 'secondary';
+    const scoreLabel = `<span class="badge text-bg-${color}">${r.score ?? 0}/4 คะแนน</span>`;
+    return `<div class="answer-feedback mt-3"><span class="badge text-bg-${color}">${labels[r.status] || 'ตรวจแล้ว'}</span> ${scoreLabel}<p class="small mt-2 mb-1">${escapeHtml(r.feedback)}</p><div class="solution"><div class="fw-bold text-success mb-2">แนวคำตอบ</div><pre>${escapeHtml(q.answer)}</pre><p><strong>คำอธิบาย:</strong> ${escapeHtml(q.explanation)}</p></div></div>`;
   }
   function render() {
     nav.innerHTML = '';
@@ -77,7 +69,7 @@
         const card = document.createElement('article');
         card.className = 'card question-card';
         const r = round.results[q.id];
-        card.innerHTML = `<div class="card-header d-flex justify-content-between align-items-center gap-2"><div class="question-title">ข้อ ${sIndex+1}.${qIndex+1} <span class="text-secondary fw-normal small">(4 คะแนน)</span></div><span class="difficulty ${difficultyClass(section.difficulty)}">${escapeHtml(section.difficulty || q.type || 'SQL')}</span></div><div class="card-body"><p class="mb-3">${escapeHtml(q.prompt)}</p><label class="answer-label" for="answer-${q.id}">คำตอบของคุณ</label><textarea class="answer-editor" id="answer-${q.id}" data-qid="${q.id}" spellcheck="false" placeholder="เขียนคำสั่ง SQL หรืออธิบายคำตอบที่นี่..." ${r || round.submitted ? 'disabled' : ''}>${escapeHtml(round.answers[q.id] || '')}</textarea><div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-2"><span class="small text-secondary save-status" id="status-${q.id}">${r ? 'ตรวจข้อนี้แล้ว' : 'บันทึกอัตโนมัติ'}</span><button type="button" class="btn btn-sm btn-outline-success check-answer" data-qid="${q.id}" ${r || round.submitted ? 'disabled' : ''}>${r ? 'ตรวจแล้ว' : 'ตรวจคำตอบข้อนี้'}</button></div><div id="feedback-${q.id}">${resultHtml(q)}</div></div>`;
+        card.innerHTML = `<div class="card-header d-flex justify-content-between align-items-center gap-2"><div class="question-title">ข้อ ${sIndex+1}.${qIndex+1} <span class="text-secondary fw-normal small">(4 คะแนน)</span></div><span class="difficulty ${difficultyClass(section.difficulty)}">${escapeHtml(section.difficulty || q.type || 'SQL')}</span></div><div class="card-body"><p class="mb-3">${escapeHtml(q.prompt)}</p><label class="answer-label" for="answer-${q.id}">คำตอบของคุณ</label><textarea class="answer-editor" id="answer-${q.id}" data-qid="${q.id}" spellcheck="false" placeholder="เขียนคำสั่ง SQL ที่นี่..." ${r || round.submitted ? 'disabled' : ''}>${escapeHtml(round.answers[q.id] || '')}</textarea><div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-2"><span class="small text-secondary save-status" id="status-${q.id}">${r ? 'ตรวจข้อนี้แล้ว' : 'บันทึกอัตโนมัติ'}</span><button type="button" class="btn btn-sm btn-outline-success check-answer" data-qid="${q.id}" ${r || round.submitted ? 'disabled' : ''}>${r ? 'ตรวจแล้ว' : 'ตรวจคำตอบข้อนี้'}</button></div><div id="feedback-${q.id}">${resultHtml(q)}</div></div>`;
         sectionEl.appendChild(card);
       });
       container.appendChild(sectionEl);
@@ -96,12 +88,6 @@
       persist(); render();
       $(`feedback-${q.id}`).scrollIntoView({behavior:'smooth', block:'nearest'});
     }));
-    document.querySelectorAll('.self-grade').forEach(btn => btn.addEventListener('click', () => {
-      if (round.submitted || round.results[btn.dataset.qid]?.status !== 'review') return;
-      const score = Number(btn.dataset.score);
-      round.results[btn.dataset.qid] = {status:score === 4 ? 'self_correct' : 'self_incorrect', score, feedback:'คะแนนจากการประเมินตนเอง ไม่ใช่การตรวจ SQL โดยฐานข้อมูลจริง'};
-      persist(); render();
-    }));
     $('submitBtn').disabled = round.submitted;
     updateProgress(); updateSummary();
   }
@@ -115,9 +101,9 @@
   function updateSummary() {
     const results = Object.values(round.results);
     const confirmed = results.reduce((sum, r) => sum + (r.score ?? 0), 0);
-    const review = results.filter(r => r.status === 'review').length;
+    const review = results.filter(r => r.provisional).length;
     const checked = results.length;
-    $('scoreSummary').textContent = `ตรวจแล้ว ${checked}/25 ข้อ · คะแนนที่ประเมินได้ ${confirmed}/100 · รอตรวจทาน ${review} ข้อ${round.submitted ? ' · ส่งข้อสอบแล้ว' : ''}`;
+    $('scoreSummary').textContent = `ตรวจแล้ว ${checked}/25 ข้อ · คะแนนรวมเบื้องต้น ${confirmed}/100 · คะแนนที่ต้องตรวจทาน ${review} ข้อ${round.submitted ? ' · ส่งข้อสอบแล้ว' : ''}`;
   }
   $('newRoundBtn').addEventListener('click', () => {
     if (!confirm('สุ่มข้อสอบรอบใหม่หรือไม่? คำตอบรอบปัจจุบันจะถูกแทนที่ (ส่งออกก่อนหากต้องการเก็บไว้)')) return;
@@ -125,12 +111,12 @@
   });
   $('submitBtn').addEventListener('click', () => {
     if (round.submitted) return;
-    if (!confirm('ยืนยันส่งข้อสอบ? หลังส่งจะไม่สามารถแก้ไขคำตอบหรือประเมินเพิ่มในรอบนี้ได้')) return;
+    if (!confirm('ยืนยันส่งข้อสอบ? หลังส่งจะไม่สามารถแก้ไขคำตอบในรอบนี้ได้')) return;
     for (const q of allQuestions()) if (!round.results[q.id]) round.results[q.id] = check(q, round.answers[q.id] || '');
     round.submitted = true; round.submittedAt = new Date().toISOString();
     persist();
     const history = read(HISTORY_KEY) || [];
-    history.unshift({roundId:round.roundId, date:round.submittedAt, groupIds:round.groupIds, score:Object.values(round.results).reduce((s,r)=>s+(r.score ?? 0),0), reviewCount:Object.values(round.results).filter(r=>r.status==='review').length});
+    history.unshift({roundId:round.roundId, date:round.submittedAt, groupIds:round.groupIds, score:Object.values(round.results).reduce((s,r)=>s+(r.score ?? 0),0), reviewCount:Object.values(round.results).filter(r=>r.provisional).length});
     write(HISTORY_KEY, history.slice(0, 50)); render();
     $('scoreSummary').scrollIntoView({behavior:'smooth',block:'center'});
   });
