@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ชุดข้อสอบจำลอง MySQL และ SQL สำหรับเตรียมสอบนักวิชาการคอมพิวเตอร์ปฏิบัติการ">
+  <title>MySQL & SQL Exam | นักวิชาการคอมพิวเตอร์ปฏิบัติการ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">SQL Practice Exam</a>
+    <span class="navbar-text text-white-50 small d-none d-md-inline">นักวิชาการคอมพิวเตอร์ปฏิบัติการ</span>
+  </div>
+</nav>
+
+<header class="hero-section">
+  <div class="container py-5">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-8">
+        <span class="eyebrow">PRACTICE EXAM • MYSQL 8.0+</span>
+        <h1 class="display-6 fw-bold mt-2">ชุดข้อสอบ MySQL Database และภาษา SQL</h1>
+        <p class="lead mb-3">ฝึกคิด วิเคราะห์ และเขียนคำสั่ง SQL จากสถานการณ์จำลอง รวม 5 ข้อใหญ่ 25 ข้อย่อย</p>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="hero-chip">25 ข้อ</span><span class="hero-chip">100 คะแนน</span><span class="hero-chip">Easy – Advanced</span>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="hero-stat">
+          <div class="stat-number">100</div>
+          <div>คะแนนเต็ม</div>
+          <hr>
+          <div class="d-flex justify-content-between"><span>ตอบแล้ว</span><strong id="answeredCount">0 / 25</strong></div>
+          <div class="progress mt-2"><div id="progressBar" class="progress-bar" role="progressbar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container py-4 py-lg-5">
+  <section class="card instruction-card mb-4">
+    <div class="card-body p-4">
+      <h2 class="h5 fw-bold">คำชี้แจง</h2>
+      <ul class="mb-0">
+        <li>ข้อสอบมี 5 หมวด หมวดละ 5 ข้อย่อย รวม 25 ข้อ ข้อละ 4 คะแนน</li>
+        <li>เขียนคำตอบ SQL ลงในช่องของแต่ละข้อ ระบบจะบันทึกคำตอบไว้ในเบราว์เซอร์เครื่องนี้โดยอัตโนมัติ</li>
+        <li>กด “ดูเฉลย” เมื่อต้องการตรวจสอบคำตอบ ทั้งนี้ระบบไม่ตรวจ SQL อัตโนมัติ</li>
+        <li>กด “ส่งออกคำตอบ” เพื่อดาวน์โหลดคำตอบทั้งหมดเป็นไฟล์ข้อความ</li>
+      </ul>
+      <div class="alert alert-warning mt-3 mb-0 small"><strong>หมายเหตุ:</strong> ชุดข้อสอบนี้เป็นข้อสอบจำลองเพื่อการฝึกฝน ไม่ใช่ข้อสอบจริงหรือแนวข้อสอบที่ได้รับการรับรองจากหน่วยงานใด</div>
+    </div>
+  </section>
+
+  <div class="toolbar d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+    <div>
+      <h2 class="h4 fw-bold mb-1">แบบฝึกหัด</h2>
+      <p class="text-secondary mb-0 small">เลือกหมวดที่ต้องการฝึก หรือทำเรียงตามลำดับ</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-outline-primary" id="exportBtn">ส่งออกคำตอบ</button>
+      <button class="btn btn-outline-danger" id="clearBtn">ล้างคำตอบทั้งหมด</button>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-4" id="sectionNav"></div>
+  <div id="examContainer"></div>
+
+  <section class="card finish-card mt-4">
+    <div class="card-body p-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div><h2 class="h5 fw-bold mb-1">ตรวจความคืบหน้า</h2><p class="text-secondary mb-0">คำตอบจะถูกเก็บไว้ใน Local Storage ของเบราว์เซอร์</p></div>
+      <div class="text-md-end"><div class="h4 fw-bold mb-0" id="completionText">0 จาก 25 ข้อ</div><span class="small text-secondary">มีการกรอกคำตอบแล้ว</span></div>
+    </div>
+  </section>
+  <footer class="text-center text-secondary small py-4">MySQL & SQL Practice Exam • สร้างเพื่อการเรียนรู้และฝึกทำข้อสอบ</footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
