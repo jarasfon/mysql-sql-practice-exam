@@ -39,3 +39,9 @@ footer { color: #718096 !important; }
   .question-card .card-body { padding: 1rem; }
   .toolbar { align-items: flex-start !important; }
 }
+
+/* Additive styles only: original colors and layout preserved */
+.answer-feedback .solution { margin-top: .7rem; }
+.answer-feedback .badge { font-size: .8rem; }
+.answer-editor:disabled { opacity: .78; background: #f1f5f9; }
+#scoreSummary { font-size: .92rem; }

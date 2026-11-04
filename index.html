@@ -48,10 +48,10 @@
     <div class="card-body p-4">
       <h2 class="h5 fw-bold">คำชี้แจง</h2>
       <ul class="mb-0">
-        <li>ข้อสอบมี 5 หมวด หมวดละ 5 ข้อย่อย รวม 25 ข้อ ข้อละ 4 คะแนน</li>
+        <li>ระบบสุ่ม 5 หมวดจากคลัง 55 หมวด หมวดละ 5 ข้อย่อย รวม 25 ข้อ ข้อละ 4 คะแนน</li>
         <li>เขียนคำตอบ SQL ลงในช่องของแต่ละข้อ ระบบจะบันทึกคำตอบไว้ในเบราว์เซอร์เครื่องนี้โดยอัตโนมัติ</li>
-        <li>กด “ดูเฉลย” เมื่อต้องการตรวจสอบคำตอบ ทั้งนี้ระบบไม่ตรวจ SQL อัตโนมัติ</li>
-        <li>กด “ส่งออกคำตอบ” เพื่อดาวน์โหลดคำตอบทั้งหมดเป็นไฟล์ข้อความ</li>
+        <li>กด “ตรวจคำตอบข้อนี้” เพื่อดูผลตรวจ เฉลย และคำอธิบายเฉพาะข้อ (คำตอบทางเลือกต้องตรวจทานด้วยตนเอง)</li>
+        <li>กด “ส่งออกคำตอบ” เพื่อดาวน์โหลดคำตอบ หรือกด “ส่งข้อสอบและสรุปผล” เพื่อบันทึกผลสอบ</li>
       </ul>
       <div class="alert alert-warning mt-3 mb-0 small"><strong>หมายเหตุ:</strong> ชุดข้อสอบนี้เป็นข้อสอบจำลองเพื่อการฝึกฝน ไม่ใช่ข้อสอบจริงหรือแนวข้อสอบที่ได้รับการรับรองจากหน่วยงานใด</div>
     </div>
@@ -60,9 +60,10 @@
   <div class="toolbar d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
     <div>
       <h2 class="h4 fw-bold mb-1">แบบฝึกหัด</h2>
-      <p class="text-secondary mb-0 small">เลือกหมวดที่ต้องการฝึก หรือทำเรียงตามลำดับ</p>
+      <p class="text-secondary mb-0 small">ระบบสุ่มหมวดข้อสอบใหม่ได้ และสามารถทำเรียงตามลำดับ</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-primary" id="newRoundBtn">สุ่มข้อสอบรอบใหม่</button>
       <button class="btn btn-outline-primary" id="exportBtn">ส่งออกคำตอบ</button>
       <button class="btn btn-outline-danger" id="clearBtn">ล้างคำตอบทั้งหมด</button>
     </div>
@@ -72,6 +73,7 @@
   <div id="examContainer"></div>
 
   <section class="card finish-card mt-4">
+    <div class="card-body px-4 pt-4 pb-0 d-flex flex-wrap align-items-center justify-content-between gap-2"><strong id="scoreSummary" aria-live="polite">ยังไม่ตรวจคำตอบ</strong><button class="btn btn-primary" id="submitBtn">ส่งข้อสอบและสรุปผล</button></div>
     <div class="card-body p-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
       <div><h2 class="h5 fw-bold mb-1">ตรวจความคืบหน้า</h2><p class="text-secondary mb-0">คำตอบจะถูกเก็บไว้ใน Local Storage ของเบราว์เซอร์</p></div>
       <div class="text-md-end"><div class="h4 fw-bold mb-0" id="completionText">0 จาก 25 ข้อ</div><span class="small text-secondary">มีการกรอกคำตอบแล้ว</span></div>
@@ -81,6 +83,7 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="questions.js"></script>
+<script src="grading.js"></script>
+<script src="storage.js"></script>
 <script src="app.js"></script>
-</body>
 </html>
